@@ -1,0 +1,56 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  max-width: 720px;
+  margin: 3rem auto;
+  padding: 0 1rem;
+  color: #1a1a1a;
+}
+
+h1 {
+  font-size: 1.5rem;
+}
+
+#ask-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+#question {
+  flex: 1;
+  padding: 0.6rem 0.8rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+button {
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #1a1a1a;
+  color: #fff;
+  cursor: pointer;
+}
+
+#status {
+  color: #666;
+  font-size: 0.9rem;
+  min-height: 1.2rem;
+}
+
+#answer {
+  line-height: 1.6;
+}
+
+#answer pre {
+  overflow-x: auto;
+  padding: 0.75rem;
+}
+
+#sources {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: #444;
+}

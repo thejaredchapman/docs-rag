@@ -1,0 +1,9 @@
+litellm>=1.55
+faiss-cpu>=1.8
+numpy>=1.26
+flask>=3.0
+tenacity>=8.2
+python-dotenv>=1.0
+fastmcp>=2.0
+pdfplumber>=0.11
+pytest>=8.0

@@ -1,0 +1,33 @@
+# Optional: run a LiteLLM proxy in front of this app so you can swap or
+# add backend models server-side without touching any app code.
+#
+# Start it:    litellm --config litellm_proxy_config.example.yaml
+# Point the app at it by setting in .env:
+#   LITELLM_API_BASE=http://localhost:4000
+#   LITELLM_API_KEY=sk-litellm-proxy-key   # any string the proxy will accept
+#   CHAT_MODEL=gpt-4o                      # must match a model_name below
+#   EMBED_MODEL=text-embedding-3-small     # must match a model_name below
+
+model_list:
+  - model_name: gpt-4o
+    litellm_params:
+      model: openai/gpt-4o
+      api_key: os.environ/OPENAI_API_KEY
+
+  - model_name: claude-sonnet-4-6
+    litellm_params:
+      model: anthropic/claude-sonnet-4-6
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  - model_name: local-llama
+    litellm_params:
+      model: ollama/llama3.1
+      api_base: http://localhost:11434
+
+  - model_name: text-embedding-3-small
+    litellm_params:
+      model: openai/text-embedding-3-small
+      api_key: os.environ/OPENAI_API_KEY
+
+litellm_settings:
+  drop_params: true

@@ -1,0 +1,80 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.thejaredchapman/docs-rag",
+  "title": "Docs RAG",
+  "description": "Answer questions about a local folder of markdown/PDF docs with source citations, via FAISS retrieval over any LLM provider (through litellm).",
+  "repository": {
+    "url": "https://github.com/thejaredchapman/docs-rag",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "docs-rag-mcp",
+      "version": "0.1.0",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "CHAT_MODEL",
+          "description": "Chat model name, resolved by litellm (e.g. gpt-4o, claude-sonnet-4-6, ollama/llama3.1). Defaults to gpt-4o.",
+          "format": "string",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "EMBED_MODEL",
+          "description": "Embedding model name, resolved by litellm. Must match the model used at ingest time. Defaults to text-embedding-3-small.",
+          "format": "string",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "OPENAI_API_KEY",
+          "description": "Required if CHAT_MODEL or EMBED_MODEL is an OpenAI model.",
+          "format": "string",
+          "isRequired": false,
+          "isSecret": true
+        },
+        {
+          "name": "ANTHROPIC_API_KEY",
+          "description": "Required if CHAT_MODEL is an Anthropic model.",
+          "format": "string",
+          "isRequired": false,
+          "isSecret": true
+        },
+        {
+          "name": "DOCS_DIR",
+          "description": "Absolute path to the folder of markdown/PDF docs to index. Defaults to ./docs relative to the current working directory.",
+          "format": "string",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "INDEX_DIR",
+          "description": "Absolute path to store/read the FAISS index. Defaults to ./index relative to the current working directory.",
+          "format": "string",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "LITELLM_API_BASE",
+          "description": "Optional: route all calls through a running LiteLLM proxy instead of calling providers directly.",
+          "format": "string",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "LITELLM_API_KEY",
+          "description": "Optional: API key for the LiteLLM proxy, if LITELLM_API_BASE is set.",
+          "format": "string",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "docs-rag-mcp"
+version = "0.1.0"
+description = "Documentation-search RAG with source citations -- FAISS retrieval over any LLM provider via litellm, exposed as an MCP server and CLI."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "Jared Chapman" }]
+dependencies = [
+  "litellm>=1.55",
+  "faiss-cpu>=1.8",
+  "numpy>=1.26",
+  "tenacity>=8.2",
+  "python-dotenv>=1.0",
+  "fastmcp>=2.0",
+  "pdfplumber>=0.11",
+]
+
+[project.urls]
+Repository = "https://github.com/thejaredchapman/docs-rag"
+
+[project.scripts]
+docs-rag-mcp = "mcp_server:main"
+docs-rag = "main:main"
+docs-rag-ingest = "ingest:build_index"
+
+[tool.setuptools]
+py-modules = ["config", "llm", "cache", "chunking", "ingest", "query", "main", "mcp_server"]
