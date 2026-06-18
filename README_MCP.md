@@ -1,9 +1,10 @@
 # MCP Server -- `mcp_server.py`
 
 A [FastMCP](https://github.com/jlowin/fastmcp) server that exposes the
-same `query.ask()` pipeline as MCP tools, so AI clients like Claude Code,
-Claude Desktop, or Cursor can query your docs directly as part of a
-conversation.
+same `query.ask()` pipeline as MCP tools, so AI coding agents -- Claude
+Code, Claude Desktop, Cursor, GitHub Copilot, OpenAI Codex, or anything
+else that speaks MCP over stdio -- can query your docs directly as part
+of a conversation.
 
 This server is also published so you don't need a local checkout at all:
 PyPI package [`docs-rag-mcp`](https://pypi.org/project/docs-rag-mcp/) and
@@ -15,8 +16,8 @@ running it (cloned repo vs. installed package) are covered below.
 - Python 3.10+, dependencies installed, `.env` configured
 - An index already built: `python ingest.py` (cloned repo) or
   `docs-rag-ingest` (installed package)
-- An MCP-capable client (Claude Code, Claude Desktop, Cursor, or anything
-  else that speaks MCP over stdio)
+- An MCP-capable client (Claude Code, Claude Desktop, Cursor, GitHub
+  Copilot, OpenAI Codex, or anything else that speaks MCP over stdio)
 
 ## Running it standalone (for testing)
 
@@ -96,6 +97,84 @@ Settings -> MCP -> Add new MCP server, same `command`/`args`/`cwd` shape
 as above (Cursor's config file is typically `~/.cursor/mcp.json` or per
 project `.cursor/mcp.json`).
 
+### GitHub Copilot (VS Code / Copilot Chat)
+
+VS Code uses a different top-level key (`servers`, not `mcpServers`) and
+**does not support a `cwd` field** -- set `DOCS_DIR`/`INDEX_DIR` to
+absolute paths in `env` instead. Add to workspace `.vscode/mcp.json`
+(shareable via source control) or via the `MCP: Open User Configuration`
+command for a user-level config:
+
+```json
+{
+  "servers": {
+    "docs-rag": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["docs-rag-mcp"],
+      "env": {
+        "OPENAI_API_KEY": "sk-...",
+        "DOCS_DIR": "/absolute/path/to/your/docs",
+        "INDEX_DIR": "/absolute/path/to/your/index"
+      }
+    }
+  }
+}
+```
+
+VS Code disables newly added tools by default -- after saving, run
+`MCP: List Servers` and enable `docs-rag`'s tools.
+
+### GitHub Copilot CLI
+
+The standalone terminal tool (distinct from VS Code) uses its own config
+at `~/.copilot/mcp-config.json`, with `"type": "local"` instead of
+`"stdio"`:
+
+```json
+{
+  "mcpServers": {
+    "docs-rag": {
+      "type": "local",
+      "command": "uvx",
+      "args": ["docs-rag-mcp"],
+      "env": {
+        "OPENAI_API_KEY": "sk-...",
+        "DOCS_DIR": "/absolute/path/to/your/docs",
+        "INDEX_DIR": "/absolute/path/to/your/index"
+      },
+      "tools": ["*"]
+    }
+  }
+}
+```
+
+Or via the CLI helper: `copilot mcp add docs-rag -- uvx docs-rag-mcp`,
+then set the env vars when prompted.
+
+### OpenAI Codex (CLI / IDE extension)
+
+Codex stores MCP config as TOML in `~/.codex/config.toml` (or
+`.codex/config.toml` scoped to a trusted project), and -- unlike VS
+Code/Copilot -- **does** support `cwd` directly:
+
+```toml
+[mcp_servers.docs-rag]
+command = "uvx"
+args = ["docs-rag-mcp"]
+cwd = "/absolute/path/to/your/project"
+
+[mcp_servers.docs-rag.env]
+OPENAI_API_KEY = "sk-..."
+```
+
+Or via the CLI helper, from your project directory:
+```bash
+codex mcp add docs-rag --env OPENAI_API_KEY=sk-... -- uvx docs-rag-mcp
+```
+The CLI and the Codex IDE extension share this same config, so you only
+need to set it up once.
+
 ### Why `cwd` matters here specifically
 
 MCP clients spawn the server as a subprocess with their own default
@@ -107,10 +186,13 @@ is intentional: it's what makes the same `docs-rag-mcp` package work for
 any user's own docs folder. But it means you must either:
 
 1. Set `cwd` in the client config to your project folder (shown above) --
-   the most reliable option, supported by Claude Code, Claude Desktop, and
-   Cursor; or
+   confirmed supported by Claude Code, Claude Desktop, Cursor, and Codex;
+   or
 2. Set `DOCS_DIR` / `INDEX_DIR` to absolute paths via the `env` block
-   instead of relying on the relative `./docs` / `./index` defaults.
+   instead of relying on the relative `./docs` / `./index` defaults --
+   **required** for VS Code / Copilot Chat (no `cwd` field exists), and
+   the safer default for GitHub Copilot CLI too, since its docs don't
+   document `cwd` support.
 
 If you'd rather not rely on a `.env` file at all, every MCP client config
 format also supports an `env` block to inject variables directly:
@@ -131,6 +213,31 @@ format also supports an `env` block to inject variables directly:
   }
 }
 ```
+
+### Providers needing more than a model name
+
+If your provider needs more than a model string (Azure's deployment name,
+Bedrock's region, Vertex's project, custom headers, etc.), set
+`CHAT_PARAMS` / `EMBED_PARAMS` in the `env` block to a JSON object --
+every key is forwarded as-is to litellm, and a `"model"` key inside it
+overrides `CHAT_MODEL`/`EMBED_MODEL` entirely:
+
+```json
+{
+  "mcpServers": {
+    "docs-rag": {
+      "command": "uvx",
+      "args": ["docs-rag-mcp"],
+      "env": {
+        "CHAT_PARAMS": "{\"model\": \"azure/my-gpt4o-deployment\", \"api_version\": \"2024-10-01\", \"api_base\": \"https://my-resource.openai.azure.com\"}"
+      }
+    }
+  }
+}
+```
+
+See the root [README.md](README.md#providers-that-need-more-than-a-model-name-bedrock-azure-vertex-)
+for more examples -- this is the same mechanism the CLI and web UI use.
 
 ## Tool reference
 

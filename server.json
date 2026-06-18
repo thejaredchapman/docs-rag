@@ -7,12 +7,12 @@
     "url": "https://github.com/thejaredchapman/docs-rag",
     "source": "github"
   },
-  "version": "0.1.0",
+  "version": "0.2.0",
   "packages": [
     {
       "registryType": "pypi",
       "identifier": "docs-rag-mcp",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "runtimeHint": "uvx",
       "transport": {
         "type": "stdio"
@@ -73,6 +73,20 @@
           "format": "string",
           "isRequired": false,
           "isSecret": true
+        },
+        {
+          "name": "CHAT_PARAMS",
+          "description": "Optional: arbitrary JSON object merged into every chat call (e.g. {\"temperature\": 0.2}). A \"model\" key overrides CHAT_MODEL. Use this for providers needing more than a model name, like Azure or Bedrock.",
+          "format": "string",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "EMBED_PARAMS",
+          "description": "Optional: arbitrary JSON object merged into every embedding call. A \"model\" key overrides EMBED_MODEL.",
+          "format": "string",
+          "isRequired": false,
+          "isSecret": false
         }
       ]
     }

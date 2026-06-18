@@ -31,11 +31,12 @@ def _check_embed_model():
     if config.INDEX_CONFIG_PATH.exists():
         index_config = json.loads(config.INDEX_CONFIG_PATH.read_text())
         built_with = index_config.get("embed_model")
-        if built_with != config.EMBED_MODEL:
+        current = config.effective_embed_model()
+        if built_with != current:
             raise RuntimeError(
-                f"Index was built with embed model '{built_with}' but config.EMBED_MODEL "
-                f"is now '{config.EMBED_MODEL}'. Vectors from different models aren't "
-                "comparable -- rerun `python ingest.py`."
+                f"Index was built with embed model '{built_with}' but the configured embed "
+                f"model is now '{current}'. Vectors from different models aren't comparable "
+                "-- rerun `python ingest.py`."
             )
 
 
@@ -49,8 +50,8 @@ def index_stats() -> dict:
     return {
         "total_chunks": index.ntotal,
         "total_sources": len(list_sources()),
-        "embed_model": config.EMBED_MODEL,
-        "chat_model": config.CHAT_MODEL,
+        "embed_model": config.effective_embed_model(),
+        "chat_model": config.effective_chat_model(),
     }
 
 

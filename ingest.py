@@ -27,8 +27,9 @@ def build_index():
         print(f"No documents found in {config.DOCS_DIR}. Add .md/.pdf files and re-run.")
         sys.exit(1)
 
+    embed_model = config.effective_embed_model()
     num_sources = len({r["source_file"] for r in records})
-    print(f"Embedding {len(chunks)} chunks from {num_sources} file(s) using {config.EMBED_MODEL}...")
+    print(f"Embedding {len(chunks)} chunks from {num_sources} file(s) using {embed_model}...")
 
     vectors = []
     for i in range(0, len(chunks), config.EMBED_BATCH_SIZE):
@@ -48,7 +49,7 @@ def build_index():
     config.INDEX_CONFIG_PATH.write_text(
         json.dumps(
             {
-                "embed_model": config.EMBED_MODEL,
+                "embed_model": embed_model,
                 "dim": dim,
                 "chunk_size": config.CHUNK_SIZE,
                 "chunk_overlap": config.CHUNK_OVERLAP,

@@ -17,7 +17,7 @@ LiteLLM proxy to swap backend models server-side without redeploying.
 |---|---|---|
 | **Web UI** (has a frontend) | `app.py` | [README_WEB.md](README_WEB.md) |
 | **CLI** | `main.py` | [README_CLI.md](README_CLI.md) |
-| **MCP server** | `mcp_server.py` | [README_MCP.md](README_MCP.md) |
+| **MCP server** (Claude Code/Desktop, Cursor, GitHub Copilot, OpenAI Codex, ...) | `mcp_server.py` | [README_MCP.md](README_MCP.md) |
 
 All three sit on top of the same `query.ask()` function in `query.py` --
 same index, same retrieval, same prompt, same answer. They're just
@@ -76,10 +76,31 @@ matching key from the environment. Just edit `.env`:
 | OpenAI | `gpt-4o` | `text-embedding-3-small` | `OPENAI_API_KEY` |
 | Anthropic + OpenAI embeddings | `claude-sonnet-4-6` | `text-embedding-3-small` | `ANTHROPIC_API_KEY`, `OPENAI_API_KEY` |
 | Local / free (Ollama) | `ollama/llama3.1` | `ollama/nomic-embed-text` | none |
+| **LiteLLM proxy** (any model behind one endpoint) | whatever `model_name` you registered, e.g. `gpt-4o` | same | `LITELLM_API_BASE` + `LITELLM_API_KEY` instead of a provider key -- see [Using the LiteLLM proxy](#using-the-litellm-proxy) below |
 
 **Gotcha:** if you change `EMBED_MODEL`, rerun `python ingest.py`. Vectors
 from different embedding models aren't comparable -- `query.py` checks the
 embed model recorded at ingest time and refuses to query a stale index.
+
+### Providers that need more than a model name (Bedrock, Azure, Vertex, ...)
+
+Some providers can't be fully described by `CHAT_MODEL`/`EMBED_MODEL`
+alone -- Azure needs a deployment name and API version, Bedrock needs a
+region, Vertex needs a project/location, etc. For these, set `CHAT_PARAMS`
+/ `EMBED_PARAMS` in `.env` to **any JSON object** -- every key is forwarded
+as-is into `litellm.completion()` / `litellm.embedding()`, with no schema
+enforced beyond "must be a JSON object" (parsed in `config._parse_json_object`,
+merged in `llm.py`). A `"model"` key inside the object overrides
+`CHAT_MODEL`/`EMBED_MODEL` entirely, so the object alone can fully specify
+the provider:
+
+```bash
+CHAT_PARAMS={"model": "azure/my-gpt4o-deployment", "api_version": "2024-10-01", "api_base": "https://my-resource.openai.azure.com"}
+EMBED_PARAMS={"model": "bedrock/amazon.titan-embed-text-v2:0", "aws_region_name": "us-east-1"}
+```
+
+This is the same mechanism `query.ask()`/the CLI/the web UI/the MCP server
+all go through -- set it once in `.env` and every interface picks it up.
 
 ## Using the LiteLLM proxy
 
@@ -133,6 +154,7 @@ cache.py      Embedding-similarity answer cache
 | `EMBED_BATCH_SIZE` | 100 | Chunks embedded per API call |
 | `CACHE_SIMILARITY_THRESHOLD` | 0.95 | Cosine similarity to count as a cache hit |
 | `CACHE_TTL_SECONDS` | 86400 | How long cached answers live |
+| `CHAT_PARAMS` / `EMBED_PARAMS` | `{}` | Arbitrary JSON object merged into every litellm call -- see [Providers that need more than a model name](#providers-that-need-more-than-a-model-name-bedrock-azure-vertex-) |
 
 ## Security
 
