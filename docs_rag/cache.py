@@ -7,7 +7,7 @@ import time
 
 import numpy as np
 
-import config
+from . import config
 
 
 class SimilarityCache:

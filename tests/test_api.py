@@ -51,10 +51,10 @@ def test_security_headers_present(client):
 def test_index_missing_returns_503(client, temp_index_dir):
     # built_index already ran for this client's fixtures, but simulate a
     # fresh app with no index by pointing query at an empty temp dir again.
-    import config
+    from docs_rag import config
 
     config.FAISS_INDEX_PATH.unlink()
-    import query
+    from docs_rag import query
 
     query._index = None
     response = client.post("/api/ask", json={"question": "anything"})

@@ -1,4 +1,4 @@
-from chunking import chunk_text, strip_frontmatter
+from docs_rag.chunking import chunk_text, strip_frontmatter
 
 
 def test_chunk_text_short_text_returns_single_chunk():

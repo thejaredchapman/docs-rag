@@ -66,7 +66,7 @@ tool, capture stdout and parse it, or call `query.ask()` directly from
 Python instead of going through the CLI:
 
 ```python
-import query
+from docs_rag import query
 
 result = query.ask("How do I configure the chunk size?")
 print(result["answer"])    # str
@@ -96,7 +96,7 @@ empty. Run `python ingest.py` from the project root.
 **`litellm.llms.openai.common_utils.OpenAIError: Missing credentials...`**
 Your `.env` doesn't have the API key that matches `CHAT_MODEL` /
 `EMBED_MODEL`. Check `.env.example` for which key each provider needs, and
-confirm `.env` is in the project root (the CLI loads it via `config.py`,
+confirm `.env` is in the project root (the CLI loads it via `docs_rag/config.py`,
 which reads `./.env` relative to the project root, not your shell's cwd).
 
 **`RuntimeError: Index was built with embed model 'X' but config.EMBED_MODEL is now 'Y'...`**

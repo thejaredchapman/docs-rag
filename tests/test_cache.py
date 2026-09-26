@@ -1,7 +1,7 @@
 import numpy as np
 
-import cache as cache_module
-from cache import SimilarityCache
+from docs_rag import cache as cache_module
+from docs_rag.cache import SimilarityCache
 
 
 def test_cache_returns_none_when_empty():

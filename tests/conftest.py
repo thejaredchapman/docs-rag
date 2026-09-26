@@ -4,9 +4,9 @@ tests never touch the network or need an API key.
 import numpy as np
 import pytest
 
-import config
-import query
-from cache import SimilarityCache
+from docs_rag import config
+from docs_rag import query
+from docs_rag.cache import SimilarityCache
 
 
 @pytest.fixture(autouse=True)
@@ -22,7 +22,7 @@ def reset_query_state():
 @pytest.fixture
 def fake_embed(monkeypatch):
     """Deterministic fake embeddings: hash the text into a small vector."""
-    import llm
+    from docs_rag import llm
 
     def _embed(texts):
         vectors = []
@@ -38,7 +38,7 @@ def fake_embed(monkeypatch):
 
 @pytest.fixture
 def fake_chat(monkeypatch):
-    import llm
+    from docs_rag import llm
 
     def _chat(messages, **kwargs):
         return "This is a fake answer. [1]"
@@ -66,7 +66,7 @@ def built_index(temp_index_dir, fake_embed):
     index_dir, docs_dir = temp_index_dir
     (docs_dir / "sample.md").write_text("# Sample\n\nThis is a sample document about widgets.")
 
-    import ingest
+    from docs_rag import ingest
 
     ingest.build_index()
     return index_dir, docs_dir

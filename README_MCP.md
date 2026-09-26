@@ -49,7 +49,7 @@ npx @modelcontextprotocol/inspector python mcp_server.py
 Two ways to wire this up: point at a cloned checkout, or use the
 published `docs-rag-mcp` package via `uvx` (no checkout needed). Either
 way, set `cwd` to the project folder containing your `docs/`, `index/`,
-and `.env` -- `config.py` resolves all paths relative to the working
+and `.env` -- `docs_rag/config.py` resolves all paths relative to the working
 directory the process runs in (see below).
 
 ### Claude Code
@@ -178,7 +178,7 @@ need to set it up once.
 ### Why `cwd` matters here specifically
 
 MCP clients spawn the server as a subprocess with their own default
-working directory -- usually *not* your project's. `config.py` resolves
+working directory -- usually *not* your project's. `docs_rag/config.py` resolves
 `DOCS_DIR`, `INDEX_DIR`, and `.env` relative to **the process's current
 working directory** (`Path.cwd()` / `find_dotenv(usecwd=True)`), not to
 where `mcp_server.py` (or the installed package) physically lives. This

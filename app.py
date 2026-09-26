@@ -6,8 +6,8 @@ import re
 
 from flask import Flask, jsonify, render_template, request
 
-import config
-import query
+from docs_rag import config
+from docs_rag import query
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

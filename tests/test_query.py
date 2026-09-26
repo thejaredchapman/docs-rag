@@ -1,7 +1,7 @@
 import pytest
 
-import config
-import query
+from docs_rag import config
+from docs_rag import query
 
 
 def test_ask_returns_answer_and_sources(built_index, fake_chat):

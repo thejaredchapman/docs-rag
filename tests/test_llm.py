@@ -1,8 +1,8 @@
 import litellm
 import pytest
 
-import config
-import llm
+from docs_rag import config
+from docs_rag import llm
 
 
 @pytest.fixture

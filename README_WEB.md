@@ -128,7 +128,7 @@ hit from an uptime monitor or load balancer health check.
 - `app.run()` is called with `debug=False` explicitly. Never flip this to
   `True` in anything reachable outside your own machine -- Flask's debug
   mode exposes an interactive debugger that can execute arbitrary code.
-- The provider API key is read once into `config.py` from `.env` and never
+- The provider API key is read once into `docs_rag/config.py` from `.env` and never
   put into a response body, header, or template context. `app._scrub()`
   additionally regex-strips anything that looks like an OpenAI/Anthropic
   style key (`sk-...`, `pk-...`) out of error messages as a defense-in-depth

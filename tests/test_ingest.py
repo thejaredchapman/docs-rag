@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-import config
+from docs_rag import config
 
 
 def test_build_index_writes_faiss_index_and_metadata(built_index):
@@ -20,7 +20,7 @@ def test_build_index_records_effective_embed_model(temp_index_dir, fake_embed, m
     _, docs_dir = temp_index_dir
     (docs_dir / "sample.md").write_text("# Sample\n\nSome content.")
 
-    import ingest
+    from docs_rag import ingest
 
     ingest.build_index()
 
@@ -29,7 +29,7 @@ def test_build_index_records_effective_embed_model(temp_index_dir, fake_embed, m
 
 
 def test_build_index_exits_when_no_docs(temp_index_dir, fake_embed):
-    import ingest
+    from docs_rag import ingest
 
     with pytest.raises(SystemExit):
         ingest.build_index()

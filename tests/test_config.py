@@ -1,6 +1,6 @@
 import pytest
 
-from config import _parse_json_object
+from docs_rag.config import _parse_json_object
 
 
 def test_parse_json_object_returns_empty_dict_when_unset(monkeypatch):

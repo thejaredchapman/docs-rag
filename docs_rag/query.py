@@ -6,9 +6,9 @@ import json
 import faiss
 import numpy as np
 
-import config
-import llm
-from cache import SimilarityCache
+from . import config
+from . import llm
+from .cache import SimilarityCache
 
 _cache = SimilarityCache()
 _index = None

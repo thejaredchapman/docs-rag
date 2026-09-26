@@ -19,7 +19,7 @@ LiteLLM proxy to swap backend models server-side without redeploying.
 | **CLI** | `main.py` | [README_CLI.md](README_CLI.md) |
 | **MCP server** (Claude Code/Desktop, Cursor, GitHub Copilot, OpenAI Codex, ...) | `mcp_server.py` | [README_MCP.md](README_MCP.md) |
 
-All three sit on top of the same `query.ask()` function in `query.py` --
+All three sit on top of the same `query.ask()` function in `docs_rag/query.py` --
 same index, same retrieval, same prompt, same answer. They're just
 different front doors. Each linked guide is a self-contained, extensive
 walkthrough: setup, every flag/endpoint/tool, example output, and
@@ -79,7 +79,7 @@ matching key from the environment. Just edit `.env`:
 | **LiteLLM proxy** (any model behind one endpoint) | whatever `model_name` you registered, e.g. `gpt-4o` | same | `LITELLM_API_BASE` + `LITELLM_API_KEY` instead of a provider key -- see [Using the LiteLLM proxy](#using-the-litellm-proxy) below |
 
 **Gotcha:** if you change `EMBED_MODEL`, rerun `python ingest.py`. Vectors
-from different embedding models aren't comparable -- `query.py` checks the
+from different embedding models aren't comparable -- `docs_rag/query.py` checks the
 embed model recorded at ingest time and refuses to query a stale index.
 
 ### Providers that need more than a model name (Bedrock, Azure, Vertex, ...)
@@ -170,3 +170,20 @@ cache.py      Embedding-similarity answer cache
 
 `pytest tests/ -v` -- every embedding and chat call is mocked
 (`tests/conftest.py`), so the suite runs fully offline with no API key.
+
+## Releasing
+
+The version lives in one place, `docs_rag/__init__.py`; `pyproject.toml`
+reads it, and `server.json` (the MCP registry manifest) repeats it. Bump
+both at once, then build and upload:
+
+```bash
+python scripts/bump_version.py 0.3.1   # updates __init__.py and server.json
+pytest tests/ -v                       # test_version.py fails if they drift
+rm -rf dist && python -m build
+python -m twine upload dist/*          # username: __token__, password: your PyPI token
+mcp-publisher publish                  # refresh the MCP registry listing
+```
+
+PyPI never accepts the same version twice, so every upload needs a new number.
+
